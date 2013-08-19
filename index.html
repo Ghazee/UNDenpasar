@@ -228,41 +228,106 @@
                 data-rel="dialog" data-transition="pop" data-icon="gear" data-iconpos="notext"></a>
             </div>
            <div data-role="content">
-		 <div class="div-widget" id="div_berita">
-             <ul data-role="listview" id="list_berita" data-inset="true"></ul>
-            </div>
+
+		  <br/>
+		  
+		   
 		   <!-- This is where the result of dynamically created listitems will be appended. -->
-		 
-  <script type="text/javascript">
-				(function($) {
-					var url = 'http://unas.siap-online.com/denpasar/berita/?callback=?';
+		  <ul id="result-listview" class="listview" data-role="listview" data-theme="b">
+		  
+		  </ul>
+   <script>
+   "use strict";
+    function jsonp(url) {
+      var head = document.head;
+      var script = document.createElement("script");
 
-					$.ajax({
-						type : 'GET',
-						url : url,
-						async : false,
-						jsonpCallback : 'jsonCallbackk',
-						contentType : "application/json",
-						dataType : 'jsonp',
-						success : function berita(data1) {
-							var list = '';
-							data1 = data1.berita;
-							var len = data1.length;
-							for (var i = 0; i < len; i++) {
+      script.setAttribute("src", url);
+      head.appendChild(script);
+      head.removeChild(script);
+    }
 
-								var berita = data1[i];
-								list+='<div data-role="collapsible" data-theme="b" data-content-theme="d">'+'<h4>'+berita.judul+'</h4>'+'<p>'+'Dipostkan Pada:'+berita.wkt_tayang+'</p>'+'<div data-role="fieldcontain" class="result">'+berita.content+'</div>'+'</div>';
-							}
 
-							$('#list_berita').append(list);
-							//$('#list_pesan').listview('refresh');
-						},
-						error : function(e) {
-							console.log(e.message);
-						}
-					});
+    function createListView() {
+	
+	jsonp("http://unas.siap-online.com/denpasar/berita/?callback=judul");
+	
+	
+	
+	 
 
-				})(jQuery);
+	 /*This function helps is mapping each listitem to its correspondig 
+	 handler.*/ 
+	
+ 
+ }
+ function changePage(id) {
+		$.mobile.changePage($(id), {transition : "slide"});
+	}
+ 
+ 
+ function judul(data) {
+	  //console.log(data);
+	  //data = data.judul.berita;
+            //var len = data.berita.length;
+	//for(var i=0;i<len;i++){
+      
+      var beritaData = data.berita;
+
+      
+
+	    $.each(beritaData, function(index, berita) {
+			//console.log(berita);
+
+		    $('#result-listview').append(
+		      '<li>'  +
+		        '<a href="" onclick="changePage(id_' + index + ');">' +
+					'<h3>' + berita.judul + '</h3>' +
+				'</a>' +
+		      '</li>'
+		    );
+
+		    /*
+				Here we are dynamically creating a new page.
+				When a list item is clicked, this is what is actually shown.
+				Do not forget to append this block of code
+				to the body tag. If appended mistakenly somewhere else,
+				the code wont work.
+		    */
+		   var content  = 	'<div data-role="page" id="id_' + index + '" data-url="id_' + index + '">' +
+							'<div data-role="header" data-position="fixed" data-theme="b">' +
+							'<a href="#" data-rel="back" data-icon="back">Back</a>' + '<a data-role="button" class="ui-btn-right" id="bt_share" href="#page_share" data-rel="dialog" data-transition="pop" data-icon="gear" data-iconpos="notext"></a>' +
+							  '<h1>' + berita.judul + '</h1>' +
+							'</div>' +
+							'<div data-role="content">' +
+							  '<p>' + 
+							    '<div data-role="fieldcontain" class="result">'+ '<font color="blue">' + 'Di Postkan Pada:   ' + berita.wkt_tayang + '</font>' +'<br/>' + berita.content 
+							    '</div>' +
+							  '</p>' +
+							'</div>' +
+							
+					    '</div>';
+						
+						
+
+			$('body').append(content);
+
+			/*Tell JQM to enhance the page with the required classes.*/
+			$(index).page();
+
+        });	// end for each
+		
+	  	$('#result-listview').listview('refresh');
+      //}
+	  
+    }
+	
+	
+	(function($) {
+	// fungsi dijalankan setelah seluruh dokumen ditampilkan
+	createListView();
+}) (jQuery);
+	
   </script>
             
 			
